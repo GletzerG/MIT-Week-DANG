@@ -1,6 +1,6 @@
 # 🛡️ Guardian Genesis (MIT-Week-DANG)
 
-Proyek VILT Stack (Laravel 10, Inertia.js, Vue 3, Tailwind CSS). Tidak perlu membuka atau menyalakan UI XAMPP/Laragon, cukup jalankan semua proses via terminal.
+Proyek VILT Stack (Laravel 10, Inertia.js, Vue 3, Tailwind CSS).
 
 ---
 
