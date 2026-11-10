@@ -12,11 +12,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // Urutan penting: bank quest dulu, baru akun.
+        $this->call([
+            NewsQuestSeeder::class,
+            DemoUserSeeder::class,
+        ]);
     }
 }

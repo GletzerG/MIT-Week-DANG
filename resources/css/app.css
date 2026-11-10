@@ -1,0 +1,270 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Token warna hidup di CSS variable, bukan hard-coded di Tailwind.
+ *
+ * KENAPA: dark & light mode tidak boleh jadi dua stylesheet. Kalau warna
+ * ditulis langsung di tailwind.config, tiap `bg-ink-900` harus digandakan
+ * jadi pasangan `dark:` / `light:` di puluhan file — dijamin ada yang
+ * kelewat, dan yang kelewat tampil putih polos di mode gelap (persis bug
+ * yang sedang diperbaiki).
+ *
+ * Aturan main: `ink` = PERMUKAAN (kanvas → kartu → track), `bone` = TULISAN,
+ * `line` = GARIS & overlay. Di light mode ketiganya dibalik bersama, jadi
+ * kombinasi `bg-bone text-ink-950` tetap kontras tanpa perlu disentuh.
+ *
+ * Pengecualian: tulisan yang duduk di atas isian neon (acid/magenta) pakai
+ * `onacid` — warna itu gelap di kedua mode, karena lime terang tidak akan
+ * pernah bisa jadi latar tulisan terang.
+ */
+@layer base {
+    :root {
+        color-scheme: dark;
+
+        --c-ink-950: 8 8 10;
+        --c-ink-900: 13 13 16;
+        --c-ink-850: 18 18 22;
+        --c-ink-800: 23 23 28;
+        --c-ink-700: 32 32 39;
+        --c-ink-600: 43 43 52;
+        --c-ink-500: 58 58 69;
+
+        --c-bone: 244 241 232;
+        --c-line: 255 255 255;
+        --c-on-acid: 8 8 10;
+        --c-grid: 255 255 255;
+
+        --c-acid-300: 238 255 138;
+        --c-acid-400: 220 255 74;
+        --c-acid-500: 198 240 0;
+        --c-acid-600: 168 204 0;
+        --c-acid-700: 127 154 0;
+
+        --c-magenta-300: 255 133 179;
+        --c-magenta-400: 255 77 146;
+        --c-magenta-500: 255 20 112;
+        --c-magenta-600: 212 0 86;
+
+        --c-signal-300: 125 239 255;
+        --c-signal-400: 47 216 245;
+        --c-signal-500: 0 184 220;
+
+        --c-amber-300: 255 209 102;
+        --c-amber-400: 255 183 3;
+        --c-amber-500: 229 148 0;
+    }
+
+    /*
+     * Light mode: kanvas = kertas hangat, kartu = putih.
+     *
+     * Warna sinyal digelapkan HANYA pada langkah yang biasa dipakai sebagai
+     * teks (300/400). Langkah 500 tetap lime — itu warna ISI (tombol), bukan
+     * warna tulisan, dan lime gelap tidak lagi terasa seperti sinyal.
+     */
+    [data-theme='light'] {
+        color-scheme: light;
+
+        --c-ink-950: 240 240 234;
+        --c-ink-900: 255 255 255;
+        --c-ink-850: 250 250 245;
+        --c-ink-800: 245 245 239;
+        --c-ink-700: 227 227 218;
+        --c-ink-600: 209 209 199;
+        --c-ink-500: 186 186 175;
+
+        --c-bone: 17 17 14;
+        --c-line: 17 17 14;
+        --c-on-acid: 8 8 10;
+        --c-grid: 17 17 14;
+
+        --c-acid-300: 92 106 0;
+        --c-acid-400: 74 86 0;
+        --c-acid-500: 198 240 0;
+        --c-acid-600: 150 180 0;
+        --c-acid-700: 110 132 0;
+
+        --c-magenta-300: 140 0 55;
+        --c-magenta-400: 190 0 80;
+        --c-magenta-500: 210 0 88;
+        --c-magenta-600: 150 0 62;
+
+        --c-signal-300: 0 110 130;
+        --c-signal-400: 0 130 155;
+        --c-signal-500: 0 100 120;
+
+        --c-amber-300: 150 95 0;
+        --c-amber-400: 180 110 0;
+        --c-amber-500: 140 85 0;
+    }
+
+    body {
+        @apply bg-ink-950 text-bone antialiased;
+        font-family: 'Barlow Condensed', system-ui, sans-serif;
+    }
+
+    ::selection {
+        background: #c6f000;
+        color: rgb(var(--c-on-acid));
+    }
+
+    /*
+     * Autofill Chrome memaksa latar kuning-biru dan tulisan hitam — di mode
+     * gelap itu tampak seperti bug. Transisi tak terbatas menahannya.
+     */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus {
+        -webkit-text-fill-color: rgb(var(--c-bone));
+        -webkit-box-shadow: 0 0 0 1000px rgb(var(--c-ink-900)) inset;
+        transition: background-color 9999s ease-in-out 0s;
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+        background: rgb(var(--c-ink-950));
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgb(var(--c-ink-600));
+        border: 2px solid rgb(var(--c-ink-950));
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #c6f000;
+    }
+}
+
+@layer utilities {
+    /* ── potongan sudut: bahasa visual utama ZZZ ─────────────────────────── */
+    .cut-sm {
+        clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+    }
+    .cut-md {
+        clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+    }
+    .cut-lg {
+        clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%);
+    }
+    .cut-tag {
+        clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    }
+    .cut-slant {
+        clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+    }
+
+    /* ── tekstur ─────────────────────────────────────────────────────────── */
+    .fx-grain::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.045;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .fx-halftone {
+        background-image: radial-gradient(rgb(var(--c-line) / 0.14) 1px, transparent 1px);
+        background-size: 6px 6px;
+    }
+
+    .fx-stripes {
+        background-image: repeating-linear-gradient(
+            -45deg,
+            rgba(198, 240, 0, 0.9) 0 8px,
+            transparent 8px 16px
+        );
+    }
+
+    .fx-stripes-ink {
+        background-image: repeating-linear-gradient(
+            -45deg,
+            rgb(var(--c-ink-950)) 0 6px,
+            transparent 6px 12px
+        );
+    }
+
+    .fx-grid {
+        background-image: linear-gradient(rgb(var(--c-grid) / 0.035) 1px, transparent 1px),
+            linear-gradient(90deg, rgb(var(--c-grid) / 0.035) 1px, transparent 1px);
+        background-size: 44px 44px;
+    }
+
+    /* ── tipografi ───────────────────────────────────────────────────────── */
+    /*
+     * Tulisan garis (outline). `color: transparent` bikin `currentColor`
+     * ikut transparan — jadi goresannya TIDAK boleh menunggu currentColor,
+     * harus baca variable tema langsung. Kalau tidak, tulisan besarnya
+     * hilang total di dua mode (ketemu saat audit kontras).
+     */
+    .txt-outline {
+        -webkit-text-stroke: 1.5px rgb(var(--c-line) / 0.5);
+        color: transparent;
+    }
+
+    .txt-tight {
+        letter-spacing: -0.02em;
+        line-height: 0.92;
+    }
+
+    .label-tag {
+        @apply inline-flex items-center gap-1.5 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.18em] cut-tag;
+    }
+
+    /* ── garis tepi tajam ────────────────────────────────────────────────── */
+    .edge {
+        @apply border border-line/10;
+    }
+    .edge-strong {
+        @apply border border-line/20;
+    }
+
+    /* ── scrollbar horizontal untuk rail ────────────────────────────────── */
+    .no-bar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-bar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
+
+@layer components {
+    /* Kartu dasar: permukaan, sudut dipotong, garis tipis. */
+    .panel {
+        @apply relative bg-ink-900 cut-md edge;
+    }
+
+    .btn-acid {
+        @apply inline-flex items-center justify-center gap-2 bg-acid-500 px-5 py-3 font-cond text-sm font-bold uppercase tracking-[0.14em] text-onacid transition cut-sm hover:bg-acid-400 active:translate-y-px disabled:opacity-40;
+    }
+
+    .btn-ghost {
+        @apply inline-flex items-center justify-center gap-2 border border-line/15 bg-transparent px-5 py-3 font-cond text-sm font-bold uppercase tracking-[0.14em] text-bone transition cut-sm hover:border-acid-500 hover:text-acid-400 disabled:opacity-40;
+    }
+
+    /* Isian form: satu bentuk untuk input, select, dan textarea. */
+    .field {
+        @apply w-full border border-line/15 bg-ink-950/60 px-3 py-2.5 font-cond text-[15px] leading-tight text-bone placeholder-bone/30 transition cut-sm focus:border-acid-500/70 focus:bg-ink-950 focus:outline-none focus:ring-1 focus:ring-acid-500/30 disabled:opacity-50;
+    }
+
+    /*
+     * Checkbox: plugin @tailwindcss/forms menggambar tanda centang PUTIH di
+     * atas `currentColor`. Di tema ini centangnya harus gelap di atas isian
+     * lime — jadi SVG-nya kita ganti sendiri, bukan diakali lewat `text-*`.
+     */
+    [type='checkbox'] {
+        @apply h-4 w-4 border border-line/25 bg-ink-950/80 transition focus:outline-none focus:ring-1 focus:ring-acid-500 focus:ring-offset-0;
+    }
+
+    [type='checkbox']:checked {
+        border-color: rgb(var(--c-acid-500));
+        background-color: rgb(var(--c-acid-500));
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%230a0a0c' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.207 4.793a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L6.5 9.086l4.293-4.293a1 1 0 0 1 1.414 0z'/%3E%3C/svg%3E");
+        background-size: 100% 100%;
+    }
+}
